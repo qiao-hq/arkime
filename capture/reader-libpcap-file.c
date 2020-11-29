@@ -481,14 +481,14 @@ LOCAL void reader_libpcapfile_pcap_cb(u_char *UNUSED(user), const struct pcap_pk
                 "If using tcpdump use the \"-s0\" option, or set readTruncatedPackets in ini file",
                 h->caplen, h->len);
         }
-        packet->pktlen     = h->caplen;
+        packet->pktlen     = h->caplen<h->len?h->caplen:h->len;
     } else {
         packet->pktlen     = h->len;
     }
 
     packet->pkt           = (u_char *)bytes;
     packet->ts            = h->ts;
-    packet->readerFilePos = ftell(offlineFile) - 16 - h->len;
+    packet->readerFilePos = ftell(offlineFile) - 16 - h->caplen;
     packet->readerPos     = readerPos;
     moloch_packet_batch(&batch, packet);
 }
